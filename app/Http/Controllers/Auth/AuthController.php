@@ -13,24 +13,14 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    public function index(): View
-    {
-        return view('auth.login');
-    }
-
     public function registration(): View
     {
         return view('auth.registration');
     }
 
-    public function postLogin(Request $request): RedirectResponse
+    public function index(): View
     {
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('dashboard')
-                   ->withSuccess('You have Successfully logged in');
-        }
-        return redirect('login')->withError('You have entered invalid credentials');
+        return view('auth.login');
     }
 
     public function postRegistration(Request $request): RedirectResponse
@@ -42,9 +32,26 @@ class AuthController extends Controller
         ]);
 
         $data = $request->all();
-        $check = $this->create($data);
+        $check = $this->create($data); 
+
+        Auth::login($check);
 
         return redirect('login')->withSuccess('Great! You have Successfully registered');
+    }
+    
+    public function postLogin(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials)) {
+            return redirect()->intended('dashboard')
+                   ->withSuccess('You have Successfully logged in');
+        }
+        return redirect('login')->withError('You have entered invalid credentials');
     }
 
     public function dashboard()
