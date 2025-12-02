@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email');
+            $table->string('division')->nullable();
+            $table->string('photo')->nullable();
             $table->timestamps();
-}); 
-
+        });
     }
 
     /**
